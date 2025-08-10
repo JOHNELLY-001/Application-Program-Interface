@@ -1,0 +1,134 @@
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Google Maps - London</title>
+  <style>
+    #map {
+      height: 400px;
+      width: 100%;
+    }
+  </style>
+</head>
+<body>
+  <h3>London</h3>
+  <div id="map"></div>
+
+  <script>
+    function initMap() {
+      const location = { lat: 51.5074, lng: -0.1278 }; // London coordinates
+      const map = new google.maps.Map(document.getElementById("map"), {
+        zoom: 10,
+        center: location,
+      });
+      new google.maps.Marker({
+        position: location,
+        map: map,
+      });
+    }
+  </script>
+  
+  <script 
+    src="https://maps.googleapis.com/maps/api/js?key="
+    async
+    defer
+  ></script>
+</body>
+</html> -->
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Google Maps - Current and Manual Location</title>
+  <style>
+    #map {
+      height: 400px;
+      width: 100%;
+      margin-bottom: 1rem;
+    }
+    #search-box {
+      margin-bottom: 1rem;
+    }
+  </style>
+</head>
+<body>
+  <h3>Google Maps with Current Location and Manual Search</h3>
+
+  <div id="search-box">
+    <input type="text" id="location-input" placeholder="Enter location name"/>
+    <button onclick="geocodeLocation()">Go</button>
+  </div>
+
+  <div id="map"></div>
+
+  <script>
+    let map;
+    let marker;
+    let geocoder;
+
+    function initMap() {
+      const defaultLocation = { lat: 51.5074, lng: -0.1278 }; // London as default
+      map = new google.maps.Map(document.getElementById("map"), {
+        center: defaultLocation,
+        zoom: 10,
+      });
+
+      geocoder = new google.maps.Geocoder();
+
+      marker = new google.maps.Marker({
+        map: map,
+      });
+
+      // Try HTML5 geolocation to get user's current location
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          position => {
+            const userLocation = {
+              lat: position.coords.latitude,
+              lng: position.coords.longitude,
+            };
+            map.setCenter(userLocation);
+            map.setZoom(14);
+            marker.setPosition(userLocation);
+          },
+          () => {
+            alert("Geolocation failed or permission denied. Showing default location.");
+          }
+        );
+      } else {
+        alert("Geolocation not supported by your browser.");
+      }
+    }
+
+    function geocodeLocation() {
+      const locationName = document.getElementById("location-input").value;
+      if (!locationName) {
+        alert("Please enter a location name.");
+        return;
+      }
+
+      geocoder.geocode({ address: locationName }, (results, status) => {
+        if (status === "OK") {
+          const loc = results[0].geometry.location;
+          map.setCenter(loc);
+          map.setZoom(14);
+          marker.setPosition(loc);
+        } else {
+          alert("Geocode was not successful for the following reason: " + status);
+        }
+      });
+    }
+  </script>
+
+  <script 
+    src="https://maps.googleapis.com/maps/api/js?"
+    async
+    defer
+  ></script>
+</body>
+</html>
